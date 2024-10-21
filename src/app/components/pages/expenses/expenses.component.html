@@ -1,0 +1,25 @@
+<div class="container mx-auto px-4">
+  <div class="bg-gray-100 rounded-lg shadow-md p-6">
+    <div class="flex justify-end space-x-2">
+      <app-custom-sort-btn></app-custom-sort-btn>
+      <app-custom-filter
+        [filterOptions]="tableColumns"
+        (onFilterSelected)="onTableFilterChange($event)"
+      ></app-custom-filter>
+      <app-custom-filter
+        [filterOptions]="categoryOptions"
+        (onFilterSelected)="onCategoryFilterChange($event)"
+      ></app-custom-filter>
+      <app-custom-filter
+        [filterOptions]="sortOptions"
+        (onFilterSelected)="onSortOptionChange($event)"
+      ></app-custom-filter>
+      <app-custom-filter
+        [filterOptions]="categoryOptions"
+        (onFilterSelected)="onCategoryFilterChange($event)"
+      ></app-custom-filter>
+    </div>
+    <app-custom-table></app-custom-table>
+    <!-- <app-pagination></app-pagination> -->
+  </div>
+</div>

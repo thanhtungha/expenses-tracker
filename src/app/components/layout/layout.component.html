@@ -1,0 +1,40 @@
+<div class="flex flex-col min-h-screen">
+  <header
+    class="bg-blue-600 text-white p-4"
+    role="banner"
+    aria-label="Website header"
+  >
+    <h1 class="text-2xl font-bold">Expenses Tracker</h1>
+  </header>
+  <main
+    class="flex-grow p-4 transition-all duration-300 ease-in-out"
+    role="main"
+    aria-label="Main content"
+  >
+    <div class="max-w-6xl mx-auto flex">
+      <nav class="w-1/4 pr-4" role="navigation" aria-label="Main navigation">
+        <ul class="space-y-2">
+          <li>
+            <a
+              routerLink="/dashboard"
+              routerLinkActive="bg-blue-100"
+              class="block py-2 px-4 text-blue-600 hover:bg-blue-100 rounded transition duration-300 ease-in-out"
+              >Dashboard</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/expenses"
+              routerLinkActive="bg-blue-100"
+              class="block py-2 px-4 text-blue-600 hover:bg-blue-100 rounded transition duration-300 ease-in-out"
+              >Expenses</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <div class="w-3/4 pl-4">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </main>
+</div>
