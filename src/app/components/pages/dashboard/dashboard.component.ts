@@ -1,17 +1,17 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { NgApexchartsModule } from 'ng-apexcharts';
+import { Component, OnInit } from '@angular/core';
 import {
   ApexNonAxisChartSeries,
   ApexResponsive,
   ApexChart,
 } from 'ng-apexcharts';
+import { ExpensesService } from '../../../services/expenses/expenses.service';
+import { Subject, takeUntil } from 'rxjs';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
   chart: ApexChart;
   responsive: ApexResponsive[];
-  labels: any;
+  labels: string[];
 };
 
 @Component({
@@ -19,22 +19,45 @@ export type ChartOptions = {
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  entriesTitle = 'No. of Entries';
-  entriesVal = '100';
-  spendingTitle = 'Total Spending';
-  spendingVal = '$230000';
-  approvalTitle = 'Needs approval';
-  approvalVal = '100';
-  public chartOptions: ChartOptions;
+  $unSubscribe = new Subject();
 
-  constructor() {
-    this.chartOptions = {
-      series: [44, 55, 13, 43, 22],
+  entriesTitle = 'No. of Entries';
+  entriesVal = '0';
+  spendingTitle = 'Total Spending';
+  spendingVal = '0';
+  categoriesChart: ChartOptions;
+  statusesChart: ChartOptions;
+
+  constructor(private readonly expensesService: ExpensesService) {
+    this.categoriesChart = {
+      series: [],
       chart: {
         width: 380,
         type: 'pie',
       },
-      labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+      labels: [],
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200,
+            },
+            legend: {
+              position: 'bottom',
+            },
+          },
+        },
+      ],
+    };
+
+    this.statusesChart = {
+      series: [],
+      chart: {
+        width: 380,
+        type: 'pie',
+      },
+      labels: [],
       responsive: [
         {
           breakpoint: 480,
@@ -52,30 +75,33 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.checkScreenSize();
-  }
+    this.expensesService
+      .getSummary()
+      .pipe(takeUntil(this.$unSubscribe))
+      .subscribe({
+        next: (res: any) => {
+          const categoryNames = Object.keys(res.categories);
+          this.categoriesChart.labels = categoryNames;
+          const categoryValues = Object.values(res.categories);
+          const categoriesSeries: ApexNonAxisChartSeries = categoryValues.map(
+            (value) => Number(value)
+          );
+          this.categoriesChart.series = categoriesSeries;
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.checkScreenSize();
-  }
+          const statuses = Object.keys(res.statuses);
+          this.statusesChart.labels = statuses;
+          const statusesValues = Object.values(res.statuses);
+          const statusesSeries: ApexNonAxisChartSeries = statusesValues.map(
+            (value) => Number(value)
+          );
+          this.statusesChart.series = statusesSeries;
 
-  checkScreenSize() {
-    const container = document.querySelector('.container') as HTMLElement;
-    const boxes = document.querySelectorAll('.box') as NodeListOf<HTMLElement>;
-
-    if (window.innerWidth < 768) {
-      container.style.flexDirection = 'column';
-      boxes.forEach((box) => {
-        box.style.width = '100%';
-        box.style.marginBottom = '1rem';
+          this.entriesVal = res.totalExpenses;
+          this.spendingVal = '£ ' + res.totalAmount;
+        },
+        error: (e: any) => {
+          console.error(e);
+        },
       });
-    } else {
-      container.style.flexDirection = 'row';
-      boxes.forEach((box) => {
-        box.style.width = '33.33%';
-        box.style.marginBottom = '0';
-      });
-    }
   }
 }

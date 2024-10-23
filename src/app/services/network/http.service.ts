@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 const headers = new HttpHeaders({
@@ -19,9 +19,9 @@ export class HttpService {
    *
    * @return an `Observable` of the body as an `ArrayBuffer`.
    */
-  get(urlPath: string): Observable<any> {
+  get(urlPath: string, params?: HttpParams): Observable<any> {
     const newUrl = this.urlService + urlPath;
-    return this.http.get(newUrl, { headers });
+    return this.http.get(newUrl, { headers, params });
   }
 
   /**
@@ -40,24 +40,8 @@ export class HttpService {
    *
    * @return an `Observable` of the body as an `ArrayBuffer`.
    */
-  put(urlPath: string, body = null): Observable<any> {
+  put(urlPath: string, body = null, params?: HttpParams): Observable<any> {
     const newUrl = this.urlService + urlPath;
-    return this.http.put(newUrl, body, { headers });
-  }
-
-  /**
-   * Construct a DELETE request which interprets the body as JSON and returns it.
-   *
-   * @return an `Observable` of the body as an `Object`.
-   */
-  delete(urlPath: string, body = null): Observable<any> {
-    const newUrl = this.urlService + urlPath;
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-      }),
-      body: body,
-    };
-    return this.http.delete(newUrl, options);
+    return this.http.put(newUrl, body, { headers, params });
   }
 }
